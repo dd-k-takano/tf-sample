@@ -56,7 +56,7 @@ jobs:
             const output = `#### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
             #### Terraform Apply 🥺\`${{ steps.apply.outcome }}\`
 
-            [Run : ${{ process.env.GITHUB_RUN_ID }}](${{ process.env.GITHUB_SERVER_URL }}/${{ process.env.GITHUB_REPOSITORY }}/actions/runs/${{ process.env.GITHUB_RUN_ID }})
+            [Run : ${process.env.GITHUB_RUN_ID}](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.TERRAFORM_WORKDIR }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
