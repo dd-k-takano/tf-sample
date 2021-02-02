@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       title:
-        version:
-          required: true
-          description: 'Release Title'
+        required: true
+        description: 'Release Title'
 
 env:
   TERRAFORM_WORKDIR: '_infra/tf/prd'
