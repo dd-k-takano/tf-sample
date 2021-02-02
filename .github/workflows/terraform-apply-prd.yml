@@ -63,6 +63,6 @@ jobs:
             github.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: github.event.inputs.title,
+              title: "${{ github.event.inputs.title }}",
               body: output
             })
