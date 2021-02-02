@@ -39,17 +39,16 @@ jobs:
         run: terraform apply -auto-approve -no-color
         continue-on-error: true
 
-      - name: Create Issue
-        uses: rishabhgupta/git-action-issue@v2
+      - name: Create Issue Comment
+        uses: actions/github-script@v3
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
           APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
         with:
-          token: ${{ env.GITHUB_TOKEN }}
-          title: Release ${{ github.event.inputs.title }}
-          body: |
-            #### Terraform Plan 📖`${{ steps.plan.outcome }}`
-            #### Terraform Apply 🥺`${{ steps.apply.outcome }}`
+          github-token: ${{ env.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Plan 📖`${{ steps.plan.outcome }}\`
+            #### Terraform Apply 🥺\`${{ steps.apply.outcome }}\`
 
             <details><summary>[Prd] Show Plan</summary>
 
@@ -57,6 +56,13 @@ jobs:
 
             </details>
 
-            [Run : ${process.env.GITHUB_RUN_ID}](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+            [Run : ${{GITHUB_RUN_ID}}](${{GITHUB_SERVER_URL}}/${{GITHUB_REPOSITORY}}/actions/runs/${{GITHUB_RUN_ID}})
 
-            *Pusher: @${{ github.actor }}, Action: `${{ github.event_name }}`, Working Directory: `${{ env.TERRAFORM_WORKDIR }}`, Workflow: `${{ github.workflow }}`*
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.TERRAFORM_WORKDIR }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: Release ${{ github.event.inputs.title }},
+              body: output
+            })
