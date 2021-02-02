@@ -9,7 +9,7 @@ on:
 
 env:
   TERRAFORM_WORKDIR: '_infra/tf/prd'
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   apply:
@@ -45,7 +45,7 @@ jobs:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
           APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
         with:
-          github-token: ${{ env.GITHUB_TOKEN }}
+          # github-token: ${{ env.GITHUB_TOKEN }}
           script: |
             const output = `#### Terraform Plan 📖`${{ steps.plan.outcome }}\`
             #### Terraform Apply 🥺\`${{ steps.apply.outcome }}\`
