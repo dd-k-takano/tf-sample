@@ -1,0 +1,62 @@
+name: terraform apply for production
+
+on:
+  workflow_dispatch:
+    title:
+      version:
+        required: true
+        description: 'Issue Title'
+
+env:
+  TERRAFORM_WORKDIR: '_infra/tf/prd'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ env.TERRAFORM_WORKDIR }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.13.5
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve -no-color
+        continue-on-error: true
+
+      - name: Create Issue
+        uses: rishabhgupta/git-action-issue@v2
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+          APPLY: "terraform\n${{ steps.apply.outputs.stdout }}"
+        with:
+          token: ${{ env.GITHUB_TOKEN }}
+          title: Release ${{ github.event.inputs.title }}
+          body: |
+            #### Terraform Plan 📖`${{ steps.plan.outcome }}`
+            #### Terraform Apply 🥺`${{ steps.apply.outcome }}`
+
+            <details><summary>[Prd] Show Plan</summary>
+
+            ```${process.env.PLAN}```
+
+            </details>
+
+            [Run : ${process.env.GITHUB_RUN_ID}](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+
+            *Pusher: @${{ github.actor }}, Action: `${{ github.event_name }}`, Working Directory: `${{ env.TERRAFORM_WORKDIR }}`, Workflow: `${{ github.workflow }}`*
