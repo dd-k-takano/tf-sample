@@ -2,10 +2,11 @@ name: terraform apply for production
 
 on:
   workflow_dispatch:
-    title:
-      version:
-        required: true
-        description: 'Issue Title'
+    inputs:
+      title:
+        version:
+          required: true
+          description: 'Release Title'
 
 env:
   TERRAFORM_WORKDIR: '_infra/tf/prd'
